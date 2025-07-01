@@ -1,0 +1,113 @@
+title: "The Crypt of Sorrows"
+author: "Gemini"
+version: "0.1.0"
+start_scene_id: "start"
+
+initial_state:
+  stats:
+    health: 100
+    gold: 10
+  inventory:
+    - "tattered map"
+  flags:
+    is_brave: true
+    found_secret: false
+
+scenes:
+  start:
+    description: |
+      You stand before the imposing stone entrance to the Crypt of Sorrows.
+      The air is cold and a sense of dread hangs heavy. Your tattered map,
+      found in your grandfather's attic, marks this as the spot.
+      A large, iron-banded wooden door bars your way. It is slightly ajar.
+    choices:
+      - text: "Push the door and enter the crypt."
+        next_scene_id: "entry_hall"
+      - text: "Check your map one more time."
+        next_scene_id: "check_map"
+      - text: "Lose your nerve and run away."
+        next_scene_id: "game_over_coward"
+
+  check_map:
+    description: |
+      You pull out the tattered map. The ink is faded, but you can make out a small,
+      hastily scrawled note near the crypt's entrance marker: *'The key is in the shadow of the gargoyle.'*
+      You look up and see two stone gargoyles flanking the entrance.
+    choices:
+      - text: "Search the left gargoyle."
+        next_scene_id: "search_gargoyle"
+        effects:
+          - set_flag: ["found_secret", true]
+      - text: "Search the right gargoyle."
+        next_scene_id: "search_gargoyle"
+        effects:
+          - set_flag: ["found_secret", true]
+      - text: "Ignore the note and enter the crypt."
+        next_scene_id: "entry_hall"
+
+  search_gargoyle:
+    description: |
+      You search the base of the gargoyle and your fingers brush against a loose stone.
+      Prying it open, you find a small, rusty iron key. This could be useful.
+    choices:
+      - text: "Take the key and enter the crypt."
+        next_scene_id: "entry_hall"
+        effects:
+          - add_item: "rusty key"
+
+  entry_hall:
+    description: |
+      The main hall is vast and silent. Dust motes dance in a single shaft of light
+      from a crack in the ceiling. Two passages lead deeper into the darkness.
+      In the center of the room is a stone chest with a rusty lock.
+    choices:
+      - text: "Take the left passage."
+        next_scene_id: "left_passage"
+      - text: "Take the right passage."
+        next_scene_id: "right_passage"
+      - text: "Try to open the chest with the rusty key."
+        next_scene_id: "open_chest"
+        conditions:
+          - has_item: "rusty key"
+      - text: "Try to smash the lock on the chest."
+        next_scene_id: "smash_chest"
+        conditions:
+          - lacks_item: "rusty key"
+
+  open_chest:
+    description: |
+      The rusty key fits perfectly into the lock. With a loud *CLICK*, the chest opens.
+      Inside you find a glowing health potion and 50 gold pieces.
+    choices:
+      - text: "Take the loot and head down the left passage."
+        next_scene_id: "left_passage"
+        effects:
+          - add_item: "glowing potion"
+          - add_to_stat: ["gold", 50]
+          - remove_item: "rusty key"
+
+  smash_chest:
+    description: "You try to smash the lock with your bare hands, but it's futile. You just end up with bruised knuckles."
+    choices:
+      - text: "Give up and take the left passage."
+        next_scene_id: "left_passage"
+      - text: "Give up and take the right passage."
+        next_scene_id: "right_passage"
+
+  left_passage:
+    description: "You walk down the left passage. It ends in a dead end. You hear a grinding noise behind you as a stone slab seals the way back. You are trapped forever."
+    choices: [] # No choices means this is an end scene
+
+  right_passage:
+    description: "You travel down the right passage and find a treasure room filled with gold! You've found the lost treasure of the Sorcerer-King!"
+    choices:
+      - text: "Celebrate your victory!"
+        next_scene_id: "game_over_win"
+
+  game_over_coward:
+    description: "You turn your back on adventure and live a long, boring, but safe life."
+    choices: []
+
+  game_over_win:
+    description: "Congratulations! You are rich beyond your wildest dreams."
+    choices: []
